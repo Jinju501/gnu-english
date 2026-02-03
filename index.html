@@ -6,10 +6,10 @@
     <style>
         :root { --gnu-blue: #004c97; --gnu-gold: #a78b45; }
         body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .app-card { background: white; width: 100%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; border-top: 8px solid var(--gnu-blue); }
-        h1 { color: var(--gnu-blue); text-align: center; font-size: 26px; margin-bottom: 5px; }
-        .sub-title { text-align: center; color: #666; font-size: 14px; margin-bottom: 25px; }
-        section { margin-bottom: 25px; padding: 18px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .app-card { background: white; width: 100%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; border-top: 8px solid var(--gnu-blue); text-align: center; }
+        h1 { color: var(--gnu-blue); font-size: 26px; margin-bottom: 5px; }
+        .sub-title { color: #666; font-size: 14px; margin-bottom: 25px; }
+        section { text-align: left; margin-bottom: 25px; padding: 18px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
         h3 { font-size: 15px; margin-top: 0; color: var(--gnu-blue); text-transform: uppercase; letter-spacing: 1px; }
         textarea { width: 100%; height: 90px; border: 1px solid #ddd; border-radius: 10px; padding: 12px; box-sizing: border-box; font-size: 16px; margin-bottom: 10px; }
         button { width: 100%; padding: 14px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s; margin-top: 5px; }
@@ -17,23 +17,24 @@
         .btn-ai:disabled { background: #94a3b8; }
         .btn-speak { background: #10b981; color: white; margin-top: 10px; }
         .btn-record { background: #ef4444; color: white; margin-top: 10px; }
-        .result-label { font-size: 12px; color: #64748b; margin-bottom: 4px; display: block; }
-        .result-box { font-size: 18px; font-weight: 600; color: #1e293b; min-height: 50px; margin-bottom: 15px; padding: 15px; background: white; border-radius: 10px; border: 1px dashed var(--gnu-blue); line-height: 1.5; }
+        .result-label { font-size: 12px; color: #64748b; margin-bottom: 4px; display: block; text-align: left; }
+        .result-box { font-size: 18px; font-weight: 600; color: #1e293b; min-height: 50px; margin-bottom: 15px; padding: 15px; background: white; border-radius: 10px; border: 1px dashed var(--gnu-blue); line-height: 1.5; text-align: left; }
         .score-circle { width: 100px; height: 100px; border-radius: 50%; border: 5px solid var(--gnu-gold); display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px auto; color: var(--gnu-blue); }
         .score-num { font-size: 32px; font-weight: 800; }
-        .feedback { font-size: 14px; color: #475569; line-height: 1.6; white-space: pre-wrap; background: #fffbe6; padding: 15px; border-radius: 10px; }
+        .feedback { font-size: 14px; color: #475569; line-height: 1.6; white-space: pre-wrap; background: #fffbe6; padding: 15px; border-radius: 10px; text-align: left; }
         #loading { display: none; text-align: center; font-size: 14px; color: var(--gnu-blue); margin: 10px 0; }
+        /* 지누 이미지 스타일 */
+        .jinu-img { width: 150px; height: auto; margin-bottom: 15px; }
     </style>
 </head>
 <body>
+
 <div class="app-card">
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img src="jinu.png" alt="Jinu" style="width: 120px; height: auto;">
-    </div>
+    <img src="jinu.png" alt="지누" class="jinu-img">
     
     <h1>GNU English Practice</h1>
     <p class="sub-title">Humanities-based English Speaking Lab</p>
-    ```
+
     <section>
         <h3>Step 1. 영작 및 교정</h3>
         <textarea id="userInput" placeholder="연습하고 싶은 문장을 입력하세요..."></textarea>
@@ -61,7 +62,6 @@
 </div>
 
 <script>
-    // 교수님의 API 키가 적용되었습니다.
     const API_KEY = 'AIzaSyDiyy6UJeoRRPC8WSQeAm7Z7Dwxq7ZnVXE';
     let refinedText = "";
     const synth = window.speechSynthesis;
@@ -82,7 +82,7 @@
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: `You are a professional English teacher. Refine this sentence to be natural and academic. Result only: "${userInput}"`
+                            text: `You are a professional English teacher at a university. Please refine the following sentence into more natural and academic English. Provide ONLY the refined sentence. Input: "${userInput}"`
                         }]
                     }]
                 })
@@ -94,7 +94,7 @@
             document.getElementById('step2').style.display = "block";
         } catch (error) {
             console.error(error);
-            alert("AI 연결에 실패했습니다. API 키나 인터넷 연결을 확인하세요.");
+            alert("AI 연결 실패. 인터넷 연결을 확인하세요.");
         } finally {
             btn.disabled = false;
             loading.style.display = "none";
@@ -127,11 +127,8 @@
         const finalScore = (confidence * 5).toFixed(1);
         document.getElementById('scoreValue').innerText = finalScore;
         document.getElementById('recordBtn').innerText = "🎤 다시 말하기";
-        
-        document.getElementById('feedbackDetail').innerText = `[인식 결과]\n"${transcript}"\n\nAI가 분석한 발음 정확도입니다. 다시 시도해서 점수를 높여보세요!`;
+        document.getElementById('feedbackDetail').innerText = `[인식 결과]\n"${transcript}"\n\n발음 정확도 점수입니다. 반복해서 시도해 보세요!`;
     };
 </script>
-
 </body>
 </html>
-
