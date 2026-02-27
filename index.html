@@ -1,149 +1,203 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>GNU English Practice - Gemini AI</title>
-    <style>
-        :root { --gnu-blue: #004c97; --gnu-gold: #a78b45; }
-        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .app-card { background: white; width: 100%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; border-top: 8px solid var(--gnu-blue); text-align: center; }
-        h1 { color: var(--gnu-blue); font-size: 26px; margin-bottom: 5px; }
-        .sub-title { color: #666; font-size: 14px; margin-bottom: 25px; }
-        section { text-align: left; margin-bottom: 25px; padding: 18px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
-        h3 { font-size: 15px; margin-top: 0; color: var(--gnu-blue); text-transform: uppercase; letter-spacing: 1px; }
-        textarea { width: 100%; height: 90px; border: 1px solid #ddd; border-radius: 10px; padding: 12px; box-sizing: border-box; font-size: 16px; margin-bottom: 10px; }
-        button { width: 100%; padding: 14px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s; margin-top: 5px; }
-        .btn-ai { background: var(--gnu-blue); color: white; }
-        .btn-ai:disabled { background: #94a3b8; }
-        .btn-speak { background: #10b981; color: white; margin-top: 10px; }
-        .btn-record { background: #ef4444; color: white; margin-top: 10px; }
-        .result-label { font-size: 12px; color: #64748b; margin-bottom: 4px; display: block; text-align: left; }
-        .result-box { font-size: 18px; font-weight: 600; color: #1e293b; min-height: 50px; margin-bottom: 15px; padding: 15px; background: white; border-radius: 10px; border: 1px dashed var(--gnu-blue); line-height: 1.5; text-align: left; }
-        .score-circle { width: 100px; height: 100px; border-radius: 50%; border: 5px solid var(--gnu-gold); display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px auto; color: var(--gnu-blue); }
-        .score-num { font-size: 32px; font-weight: 800; }
-        .feedback { font-size: 14px; color: #475569; line-height: 1.6; white-space: pre-wrap; background: #fffbe6; padding: 15px; border-radius: 10px; text-align: left; }
-        #loading { display: none; text-align: center; font-size: 14px; color: var(--gnu-blue); margin: 10px 0; }
-        .jinu-img { width: 150px; height: auto; margin-bottom: 15px; }
-    </style>
+<meta charset="UTF-8">
+<title>GNU English Practice - Gemini AI</title>
+
+<style>
+:root { --gnu-blue:#004c97; --gnu-gold:#a78b45; }
+
+body{
+font-family:sans-serif;
+background:#f0f2f5;
+display:flex;
+justify-content:center;
+padding:20px;
+}
+
+.app-card{
+background:white;
+max-width:600px;
+width:100%;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.1);
+border-top:8px solid var(--gnu-blue);
+text-align:center;
+}
+
+textarea{
+width:100%;
+height:90px;
+margin-bottom:10px;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:8px;
+cursor:pointer;
+}
+
+.result-box{
+min-height:60px;
+padding:12px;
+border:1px dashed var(--gnu-blue);
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="app-card">
-    <img src="jinu.png" alt="지누" class="jinu-img">
-    <h1>GNU English Practice</h1>
-    <p class="sub-title">Humanities-based English Speaking Lab</p>
 
-    <section>
-        <h3>Step 1. 영작 및 교정</h3>
-        <textarea id="userInput" placeholder="연습하고 싶은 문장을 입력하세요..."></textarea>
-        <button id="refineBtn" class="btn-ai" onclick="refineWithAI()">AI 문장 교정 실행</button>
-        <div id="loading">AI가 문장을 다듬고 있습니다...</div>
-        <div style="margin-top:20px;">
-            <span class="result-label">교정된 문장 (AI Refined):</span>
-            <div id="refinedResult" class="result-box">문장을 입력하고 버튼을 누르세요.</div>
-            <button class="btn-speak" onclick="listenNative()">🔊 원어민 발음 듣기</button>
-        </div>
-    </section>
+<h2>GNU English Practice</h2>
 
-    <section id="step2" style="display:none;">
-        <h3>Step 2. 말하기 연습 및 평가</h3>
-        <button id="recordBtn" class="btn-record" onclick="startRecording()">🎤 발음 시작 (클릭)</button>
-        <div id="evaluationArea" style="display:none;">
-            <div class="score-circle">
-                <span style="font-size:12px;">SCORE</span>
-                <span class="score-num" id="scoreValue">0.0</span>
-            </div>
-            <div class="feedback" id="feedbackDetail"></div>
-        </div>
-    </section>
+<textarea id="userInput"
+placeholder="문장을 입력하세요"></textarea>
+
+<button id="refineBtn"
+onclick="refineWithAI()">
+
+AI 문장 교정 실행
+
+</button>
+
+<div id="loading" style="display:none;">
+AI 처리중...
+</div>
+
+<div id="refinedResult"
+class="result-box">
+
+결과가 여기 표시됩니다.
+
+</div>
+
 </div>
 
 <script>
-    // 💡 보안을 위해 키를 두 조각으로 분리하여 저장합니다.
-    // GitHub의 자동 감지 시스템은 이렇게 조각난 키를 식별하지 못합니다.
-    const key_part1 = 'AIzaSyC4pxiMkQTykSTl6-';
-    const key_part2 = 'luynhhcuGoTRUKW6E';
-    
-    // 두 조각을 합쳐 최종 API_KEY 생성
-    const API_KEY = key_part1 + key_part2;
-    
-    let refinedText = "";
-    const synth = window.speechSynthesis;
 
-    async function refineWithAI() {
-        const userInput = document.getElementById('userInput').value;
-        if (!userInput) return alert("문장을 입력해주세요.");
-        const btn = document.getElementById('refineBtn');
-        const loading = document.getElementById('loading');
-        btn.disabled = true;
-        loading.style.display = "block";
+/*
+⚠️ 여기만 직접 본인이 입력하세요.
+절대 GitHub public repo에 그대로 올리지 마세요.
+*/
 
-        try {
-            // API 호출 주소에 API_KEY를 안전하게 전달합니다.
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `You are a professional English teacher at a university. Please refine the following sentence into more natural and academic English. Provide ONLY the refined sentence. Input: "${userInput}"`
-                        }]
-                    }]
-                })
-            });
+const API_KEY="AIzaSyDz9rPTpRuTsPVaQi08VQ0PeGN-G-b_jlI";
 
-            const data = await response.json();
-            
-            // 오류 발생 시 상세 메시지 출력
-            if (data.error) {
-                console.error("API Error:", data.error.message);
-                throw new Error(data.error.message);
-            }
+async function refineWithAI(){
 
-            refinedText = data.candidates[0].content.parts[0].text.trim();
-            document.getElementById('refinedResult').innerText = refinedText;
-            document.getElementById('step2').style.display = "block";
-        } catch (error) {
-            console.error("Catch Error:", error);
-            alert("AI 연결 실패. 잠시 후 다시 시도해 주세요.");
-        } finally {
-            btn.disabled = false;
-            loading.style.display = "none";
-        }
-    }
+const input=document.getElementById("userInput").value;
 
-    function listenNative() {
-        if (!refinedText) return;
-        synth.cancel();
-        const utter = new SpeechSynthesisUtterance(refinedText);
-        utter.lang = 'en-US';
-        utter.rate = 0.85;
-        synth.speak(utter);
-    }
+if(!input){
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = (SpeechRecognition) ? new SpeechRecognition() : null;
-    
-    if (recognition) {
-        recognition.lang = 'en-US';
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript.toLowerCase();
-            const confidence = event.results[0][0].confidence;
-            document.getElementById('evaluationArea').style.display = "block";
-            const finalScore = (confidence * 5).toFixed(1);
-            document.getElementById('scoreValue').innerText = finalScore;
-            document.getElementById('recordBtn').innerText = "🎤 다시 말하기";
-            document.getElementById('feedbackDetail').innerText = `[인식 결과]\n"${transcript}"\n\n발음 정확도 점수입니다. 반복해서 시도해 보세요!`;
-        };
-    }
+alert("문장을 입력하세요");
 
-    function startRecording() {
-        if (!recognition) return alert("이 브라우저는 음성 인식을 지원하지 않습니다.");
-        recognition.start();
-        document.getElementById('recordBtn').innerText = "🔴 듣고 있습니다...";
-    }
+return;
+}
+
+const btn=document.getElementById("refineBtn");
+const loading=document.getElementById("loading");
+
+btn.disabled=true;
+loading.style.display="block";
+
+try{
+
+const url=
+`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+const response=await fetch(url,{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+contents:[{
+
+parts:[{
+
+text:
+`Refine into natural academic English only:
+
+"${input}"`
+
+}]
+
+}]
+
+})
+
+});
+
+
+/* ⭐ 가장 중요 — HTTP 오류 확인 */
+
+if(!response.ok){
+
+const errorText=
+await response.text();
+
+console.error(
+"HTTP ERROR:",
+errorText
+);
+
+throw new Error("HTTP FAIL");
+
+}
+
+
+const data=await response.json();
+
+console.log("Gemini RAW:",data);
+
+
+/* ⭐ 안전한 응답 파싱 */
+
+const refined=
+data?.candidates?.[0]
+?.content?.parts?.[0]
+?.text;
+
+if(!refined){
+
+throw new Error(
+"응답 구조 오류"
+);
+
+}
+
+document
+.getElementById("refinedResult")
+.innerText=refined.trim();
+
+}catch(e){
+
+console.error("AI ERROR:",e);
+
+alert(
+"AI 연결 실패 — Console(F12)을 확인하세요."
+);
+
+}
+
+finally{
+
+btn.disabled=false;
+
+loading.style.display="none";
+
+}
+
+}
+
 </script>
+
 </body>
 </html>
