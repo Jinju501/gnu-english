@@ -928,7 +928,7 @@ async function evaluateWriting() {
       body: JSON.stringify({ sentence })
     });
 
-    if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+    if (!res.ok) { const errBody = await res.text(); throw new Error('서버 오류 ' + res.status + ': ' + errBody); }
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
@@ -1120,7 +1120,7 @@ async function evaluateSpeaking() {
       body: JSON.stringify({ targetSentence, spokenText })
     });
 
-    if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+    if (!res.ok) { const errBody = await res.text(); throw new Error('서버 오류 ' + res.status + ': ' + errBody); }
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
