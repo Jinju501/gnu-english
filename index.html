@@ -2,13 +2,18 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>GNU English Practice - Gemini AI</title>
+
+<title>GNU English Practice</title>
 
 <style>
-:root { --gnu-blue:#004c97; --gnu-gold:#a78b45; }
+
+:root{
+--gnu-blue:#004c97;
+--gnu-gold:#a78b45;
+}
 
 body{
-font-family:sans-serif;
+font-family:Pretendard,sans-serif;
 background:#f0f2f5;
 display:flex;
 justify-content:center;
@@ -16,96 +21,310 @@ padding:20px;
 }
 
 .app-card{
+
 background:white;
-max-width:600px;
 width:100%;
-padding:30px;
+max-width:600px;
+
 border-radius:20px;
+
 box-shadow:0 10px 30px rgba(0,0,0,.1);
+
+padding:30px;
+
 border-top:8px solid var(--gnu-blue);
+
 text-align:center;
+
+}
+
+h1{
+
+color:var(--gnu-blue);
+
+}
+
+section{
+
+text-align:left;
+
+margin-bottom:25px;
+
+padding:18px;
+
+border-radius:12px;
+
+background:#f8fafc;
+
+border:1px solid #e2e8f0;
+
 }
 
 textarea{
+
 width:100%;
+
 height:90px;
-margin-bottom:10px;
+
+border-radius:10px;
+
+padding:12px;
+
 }
 
 button{
+
 width:100%;
-padding:12px;
-margin-top:8px;
+
+padding:14px;
+
+margin-top:10px;
+
+border:none;
+
+border-radius:10px;
+
 cursor:pointer;
+
+font-weight:bold;
+
+}
+
+.btn-ai{
+
+background:var(--gnu-blue);
+
+color:white;
+
+}
+
+.btn-record{
+
+background:#ef4444;
+
+color:white;
+
+}
+
+.btn-speak{
+
+background:#10b981;
+
+color:white;
+
 }
 
 .result-box{
-min-height:60px;
-padding:12px;
+
+font-size:18px;
+
+padding:15px;
+
+background:white;
+
+border-radius:10px;
+
 border:1px dashed var(--gnu-blue);
+
+min-height:50px;
+
+}
+
+.feedback{
+
+background:#fffbe6;
+
+padding:15px;
+
+border-radius:10px;
+
+white-space:pre-wrap;
+
+}
+
+.score-circle{
+
+width:100px;
+
+height:100px;
+
+border-radius:50%;
+
+border:5px solid var(--gnu-gold);
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+margin:20px auto;
+
+}
+
+.jinu-img{
+
+width:150px;
+
+margin-bottom:15px;
+
+}
+
+#loading{
+
+display:none;
+
+color:var(--gnu-blue);
+
+margin:10px;
+
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="app-card">
 
-<h2>GNU English Practice</h2>
+<img src="jinu.png" class="jinu-img">
+
+<h1>GNU English Practice</h1>
+
+<p>Humanities-based English Speaking Lab</p>
+
+
+<section>
+
+<h3>STEP 1. 영작 및 교정</h3>
 
 <textarea id="userInput"
-placeholder="문장을 입력하세요"></textarea>
+placeholder="연습 문장을 입력하세요"></textarea>
 
 <button id="refineBtn"
+class="btn-ai"
 onclick="refineWithAI()">
 
 AI 문장 교정 실행
 
 </button>
 
-<div id="loading" style="display:none;">
+<div id="loading">
+
 AI 처리중...
+
 </div>
+
+
+<div>
+
+<p>교정 문장</p>
 
 <div id="refinedResult"
 class="result-box">
 
-결과가 여기 표시됩니다.
+문장을 입력하세요.
+
+</div>
+
+<button
+class="btn-speak"
+onclick="listenNative()">
+
+🔊 원어민 발음 듣기
+
+</button>
+
+</div>
+
+</section>
+
+
+
+<section id="step2"
+style="display:none;">
+
+<h3>STEP 2. 말하기 평가</h3>
+
+<button id="recordBtn"
+class="btn-record"
+onclick="startRecording()">
+
+🎤 발음 시작
+
+</button>
+
+<div id="evaluationArea"
+style="display:none;">
+
+<div class="score-circle">
+
+<span>SCORE</span>
+
+<span id="scoreValue"
+style="font-size:28px;">
+
+0.0
+
+</span>
+
+</div>
+
+<div id="feedbackDetail"
+class="feedback">
 
 </div>
 
 </div>
+
+</section>
+
+</div>
+
 
 <script>
 
-/*
-⚠️ 여기만 직접 본인이 입력하세요.
-절대 GitHub public repo에 그대로 올리지 마세요.
-*/
+/* ⭐ 여기만 직접 본인 API KEY 입력 */
 
 const API_KEY="AIzaSyDz9rPTpRuTsPVaQi08VQ0PeGN-G-b_jlI";
 
+
+let refinedText="";
+
+const synth=window.speechSynthesis;
+
+
+
 async function refineWithAI(){
 
-const input=document.getElementById("userInput").value;
+const input=document
+.getElementById("userInput").value;
 
 if(!input){
 
 alert("문장을 입력하세요");
 
 return;
+
 }
 
-const btn=document.getElementById("refineBtn");
-const loading=document.getElementById("loading");
+const btn=
+document.getElementById("refineBtn");
+
+const loading=
+document.getElementById("loading");
 
 btn.disabled=true;
+
 loading.style.display="block";
 
 try{
 
 const url=
+
 `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 const response=await fetch(url,{
@@ -113,7 +332,9 @@ const response=await fetch(url,{
 method:"POST",
 
 headers:{
+
 "Content-Type":"application/json"
+
 },
 
 body:JSON.stringify({
@@ -123,6 +344,7 @@ contents:[{
 parts:[{
 
 text:
+
 `Refine into natural academic English only:
 
 "${input}"`
@@ -136,54 +358,48 @@ text:
 });
 
 
-/* ⭐ 가장 중요 — HTTP 오류 확인 */
+/* ⭐ 진짜 중요 */
 
 if(!response.ok){
 
-const errorText=
-await response.text();
+const t=await response.text();
 
-console.error(
-"HTTP ERROR:",
-errorText
-);
+console.error("SERVER ERROR:",t);
 
 throw new Error("HTTP FAIL");
 
 }
 
-
 const data=await response.json();
 
-console.log("Gemini RAW:",data);
+console.log("Gemini:",data);
 
+refinedText=
 
-/* ⭐ 안전한 응답 파싱 */
-
-const refined=
 data?.candidates?.[0]
 ?.content?.parts?.[0]
 ?.text;
 
-if(!refined){
+if(!refinedText){
 
-throw new Error(
-"응답 구조 오류"
-);
+throw new Error("응답 없음");
 
 }
 
 document
 .getElementById("refinedResult")
-.innerText=refined.trim();
+.innerText=refinedText.trim();
 
-}catch(e){
+document
+.getElementById("step2")
+.style.display="block";
 
-console.error("AI ERROR:",e);
+}
+catch(e){
 
-alert(
-"AI 연결 실패 — Console(F12)을 확인하세요."
-);
+console.error(e);
+
+alert("AI 연결 실패 — F12 Console 확인");
 
 }
 
@@ -194,6 +410,119 @@ btn.disabled=false;
 loading.style.display="none";
 
 }
+
+}
+
+
+
+function listenNative(){
+
+if(!refinedText)return;
+
+synth.cancel();
+
+const u=
+new SpeechSynthesisUtterance(
+refinedText
+);
+
+u.lang="en-US";
+
+u.rate=.9;
+
+synth.speak(u);
+
+}
+
+
+
+/* ===== 말하기 평가 ===== */
+
+const SpeechRecognition=
+
+window.SpeechRecognition
+||
+window.webkitSpeechRecognition;
+
+
+const recognition=
+
+SpeechRecognition
+?
+new SpeechRecognition()
+:null;
+
+
+if(recognition){
+
+recognition.lang="en-US";
+
+recognition.onresult=(e)=>{
+
+const transcript=
+
+e.results[0][0]
+.transcript
+.toLowerCase();
+
+const confidence=
+
+e.results[0][0]
+.confidence;
+
+document
+.getElementById("evaluationArea")
+.style.display="block";
+
+document
+.getElementById("scoreValue")
+.innerText=
+
+(confidence*5)
+.toFixed(1);
+
+document
+.getElementById("feedbackDetail")
+.innerText=
+
+`[인식 결과]
+
+"${transcript}"
+
+발음 정확도 점수입니다.
+반복 연습하세요!`;
+
+document
+.getElementById("recordBtn")
+.innerText=
+
+"🎤 다시 말하기";
+
+};
+
+}
+
+
+
+function startRecording(){
+
+if(!recognition){
+
+alert(
+"이 브라우저는 음성인식 미지원"
+);
+
+return;
+
+}
+
+recognition.start();
+
+document
+.getElementById("recordBtn")
+.innerText=
+
+"🔴 듣는 중...";
 
 }
 
