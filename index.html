@@ -1,413 +1,1268 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
 <meta charset="UTF-8">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GNU English Practice</title>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --gnu-navy: #0A2472;
+    --gnu-blue: #1E429F;
+    --gnu-sky: #3B82F6;
+    --gnu-gold: #F59E0B;
+    --gnu-light: #EFF6FF;
+    --gnu-white: #FFFFFF;
+    --gnu-gray: #64748B;
+    --gnu-border: #DBEAFE;
+    --gnu-success: #10B981;
+    --gnu-warn: #F59E0B;
+    --gnu-danger: #EF4444;
+    --shadow-sm: 0 2px 8px rgba(10,36,114,0.08);
+    --shadow-md: 0 8px 32px rgba(10,36,114,0.12);
+    --shadow-lg: 0 20px 60px rgba(10,36,114,0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
 
-:root{
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
---gnu-blue:#004c97;
---gnu-gold:#a78b45;
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 40%, #EFF6FF 100%);
+    min-height: 100vh;
+    color: #1E293B;
+  }
 
-}
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--gnu-navy) 0%, var(--gnu-blue) 100%);
+    color: white;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 72px;
+    box-shadow: var(--shadow-md);
+    position: sticky; top: 0; z-index: 100;
+  }
 
-body{
+  .logo-icon {
+    width: 48px; height: 48px;
+    background: white;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
 
-font-family:Pretendard,Arial;
-background:#f0f2f5;
-display:flex;
-justify-content:center;
-padding:20px;
+  .logo-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+  }
 
-}
+  .logo-text p {
+    font-size: 11px;
+    opacity: 0.75;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
 
-.app{
+  /* ── WORKER URL SETUP ── */
+  .setup-banner {
+    background: linear-gradient(90deg, #FEF3C7, #FDE68A);
+    border-bottom: 2px solid var(--gnu-gold);
+    padding: 12px 24px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: #92400E;
+  }
 
-background:white;
-max-width:650px;
-width:100%;
-border-radius:20px;
-padding:25px;
-text-align:center;
-border-top:8px solid var(--gnu-blue);
+  .setup-banner input {
+    flex: 1; max-width: 480px;
+    padding: 6px 12px;
+    border: 1.5px solid #F59E0B;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Source Code Pro', monospace;
+    background: white;
+    color: #1E293B;
+  }
 
-}
+  .setup-banner button {
+    padding: 6px 16px;
+    background: var(--gnu-gold);
+    border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; color: #1E293B;
+    transition: background 0.2s;
+  }
+  .setup-banner button:hover { background: #D97706; color: white; }
 
-textarea{
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    padding: 24px 24px 0;
+    gap: 8px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
 
-width:100%;
-height:100px;
-font-size:16px;
-margin-top:10px;
+  .tab-btn {
+    flex: 1;
+    padding: 14px;
+    border: 2px solid var(--gnu-border);
+    background: white;
+    border-radius: var(--radius) var(--radius) 0 0;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gnu-gray);
+    transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
 
-}
+  .tab-btn.active {
+    background: white;
+    border-color: var(--gnu-blue);
+    border-bottom-color: white;
+    color: var(--gnu-navy);
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+  }
 
-button{
+  .tab-btn:hover:not(.active) {
+    background: var(--gnu-light);
+    border-color: var(--gnu-sky);
+  }
 
-width:100%;
-padding:14px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-font-weight:bold;
-cursor:pointer;
+  /* ── MAIN PANEL ── */
+  .panel {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    background: white;
+    border: 2px solid var(--gnu-blue);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    display: none;
+  }
 
-}
+  .panel.active { display: block; }
 
-.ai{
+  /* ── WRITING SECTION ── */
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gnu-blue);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
 
-background:var(--gnu-blue);
-color:white;
+  .topic-box {
+    background: linear-gradient(135deg, var(--gnu-light), #DBEAFE);
+    border: 1.5px solid var(--gnu-border);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
 
-}
+  .topic-box .topic-label {
+    font-size: 11px;
+    color: var(--gnu-gray);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
 
-.record{
+  .topic-box .topic-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gnu-navy);
+    line-height: 1.5;
+  }
 
-background:#ef4444;
-color:white;
+  .topic-actions {
+    margin-top: 10px;
+    display: flex; gap: 8px;
+  }
 
-}
+  .topic-input-row {
+    display: flex; gap: 8px; margin-bottom: 12px;
+  }
 
-.speak{
+  .topic-input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gnu-border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #1E293B;
+    outline: none;
+    transition: border-color 0.2s;
+  }
 
-background:#10b981;
-color:white;
+  .topic-input-row input:focus { border-color: var(--gnu-sky); }
 
-}
+  textarea {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid var(--gnu-border);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    resize: vertical;
+    min-height: 100px;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    color: #1E293B;
+    line-height: 1.7;
+  }
 
-.box{
+  textarea:focus {
+    border-color: var(--gnu-sky);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
+  }
 
-background:#f8fafc;
-padding:15px;
-border-radius:10px;
-margin-top:15px;
-text-align:left;
+  .char-count {
+    text-align: right;
+    font-size: 12px;
+    color: var(--gnu-gray);
+    margin-top: 6px;
+  }
 
-}
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 12px 28px;
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
 
-.score{
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gnu-blue), var(--gnu-navy));
+    color: white;
+    box-shadow: 0 4px 16px rgba(30,66,159,0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(30,66,159,0.4);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-width:100px;
-height:100px;
-border-radius:50%;
-border:5px solid var(--gnu-gold);
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-margin:15px auto;
+  .btn-sm {
+    padding: 6px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
 
-}
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--gnu-border);
+    color: var(--gnu-gray);
+  }
+  .btn-outline:hover { border-color: var(--gnu-sky); color: var(--gnu-blue); background: var(--gnu-light); }
 
-img{
+  .btn-gold {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+    box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+  }
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
 
-width:140px;
+  /* ── SCORE CARDS ── */
+  .result-box {
+    margin-top: 28px;
+    animation: slideUp 0.4s ease;
+  }
 
-}
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
+  .total-score {
+    background: linear-gradient(135deg, var(--gnu-navy) 0%, var(--gnu-blue) 100%);
+    color: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .total-score::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+
+  .total-score .score-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  .total-score .score-denom {
+    font-size: 22px;
+    opacity: 0.7;
+  }
+
+  .total-score .score-label {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .score-stars {
+    display: flex; justify-content: center; gap: 6px;
+    margin-top: 10px;
+    font-size: 28px;
+  }
+
+  .criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .criteria-grid { grid-template-columns: 1fr; }
+  }
+
+  .criterion-card {
+    background: var(--gnu-light);
+    border: 1.5px solid var(--gnu-border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .criterion-card.pass { border-color: var(--gnu-success); background: #F0FDF4; }
+  .criterion-card.fail { border-color: #FECACA; background: #FFF5F5; }
+
+  .criterion-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .criterion-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gnu-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .criterion-badge {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .criterion-feedback {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+  }
+
+  /* ── IMPROVED SENTENCE ── */
+  .improved-box {
+    background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+    border: 2px solid var(--gnu-success);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .improved-box .label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gnu-success);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .improved-sentence {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 17px;
+    color: #065F46;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .improved-explanation {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #047857;
+    line-height: 1.6;
+  }
+
+  /* ── SPEAKING SECTION ── */
+  .target-sentence-box {
+    background: linear-gradient(135deg, var(--gnu-navy), var(--gnu-blue));
+    color: white;
+    border-radius: var(--radius-sm);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+
+  .target-sentence-box .label {
+    font-size: 11px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .target-sentence-box .sentence {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .tts-btn {
+    margin-top: 12px;
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .tts-btn:hover { background: rgba(255,255,255,0.25); }
+  .tts-btn.speaking { background: rgba(245,158,11,0.4); border-color: var(--gnu-gold); }
+
+  /* ── MIC BUTTON ── */
+  .mic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px;
+    background: var(--gnu-light);
+    border-radius: var(--radius);
+    border: 2px dashed var(--gnu-border);
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+
+  .mic-area.recording {
+    background: #FFF5F5;
+    border-color: var(--gnu-danger);
+    border-style: solid;
+  }
+
+  .mic-btn {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--gnu-blue), var(--gnu-navy));
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(30,66,159,0.35);
+    transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+
+  .mic-btn:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(30,66,159,0.45); }
+
+  .mic-btn.recording {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    box-shadow: 0 8px 32px rgba(239,68,68,0.4);
+    animation: pulse 1.2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(239,68,68,0.4); }
+    50% { transform: scale(1.08); box-shadow: 0 12px 48px rgba(239,68,68,0.6); }
+  }
+
+  .mic-hint {
+    font-size: 13px;
+    color: var(--gnu-gray);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .mic-hint strong {
+    display: block;
+    font-size: 15px;
+    color: var(--gnu-navy);
+    margin-bottom: 4px;
+  }
+
+  .transcript-box {
+    background: #F8FAFC;
+    border: 1.5px solid var(--gnu-border);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #374151;
+    min-height: 44px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ── PHONETIC TIPS ── */
+  .tips-box {
+    background: linear-gradient(135deg, #FFF7ED, #FEF3C7);
+    border: 1.5px solid #FDE68A;
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+
+  .tips-box .label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #92400E;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .tips-box p {
+    font-size: 14px;
+    color: #78350F;
+    line-height: 1.7;
+  }
+
+  /* ── ENCOURAGE ── */
+  .encourage-box {
+    background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+    border: 1.5px solid var(--gnu-border);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--gnu-navy);
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* ── REPEAT PRACTICE ── */
+  .repeat-section {
+    margin-top: 24px;
+    border-top: 1.5px solid var(--gnu-border);
+    padding-top: 24px;
+  }
+
+  .word-chips {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+  }
+
+  .word-chip {
+    padding: 8px 14px;
+    background: white;
+    border: 1.5px solid var(--gnu-border);
+    border-radius: 20px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    color: var(--gnu-navy);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .word-chip:hover { border-color: var(--gnu-sky); background: var(--gnu-light); color: var(--gnu-blue); }
+
+  /* ── LOADING ── */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; padding: 32px;
+    color: var(--gnu-gray); font-size: 15px;
+  }
+
+  .spinner {
+    width: 24px; height: 24px;
+    border: 3px solid var(--gnu-border);
+    border-top-color: var(--gnu-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ERROR ── */
+  .error-box {
+    background: #FFF5F5;
+    border: 1.5px solid #FECACA;
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    color: #DC2626;
+    font-size: 14px;
+    margin-top: 16px;
+  }
+
+  /* ── NO WORKER ── */
+  .no-worker-msg {
+    text-align: center;
+    padding: 40px;
+    color: var(--gnu-gray);
+  }
+  .no-worker-msg span { font-size: 40px; display: block; margin-bottom: 12px; }
+
+  /* ── PROGRESS BAR ── */
+  .score-bar-wrap {
+    display: flex; align-items: center; gap: 12px; margin-top: 16px;
+  }
+  .score-bar-label { font-size: 13px; font-weight: 600; color: var(--gnu-navy); min-width: 60px; }
+  .score-bar {
+    flex: 1; height: 8px;
+    background: var(--gnu-border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--gnu-sky), var(--gnu-blue));
+    transition: width 0.8s ease;
+  }
+  .score-bar-val { font-size: 13px; font-weight: 700; color: var(--gnu-navy); min-width: 28px; text-align: right; }
+
+  /* ── TOPIC DROPDOWN ── */
+  select.topic-select {
+    padding: 8px 14px;
+    border: 1.5px solid var(--gnu-border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: white;
+    color: var(--gnu-navy);
+    cursor: pointer;
+    outline: none;
+  }
+  select.topic-select:focus { border-color: var(--gnu-sky); }
+
+  .action-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-top: 16px; flex-wrap: wrap;
+  }
+
+  /* ── REPEAT WORD TTS ── */
+  .word-chip .play-icon { opacity: 0.5; }
+  .word-chip:hover .play-icon { opacity: 1; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--gnu-gray);
+    opacity: 0.7;
+  }
 </style>
-
 </head>
-
-
 <body>
 
+<!-- HEADER -->
+<header>
+  <div class="logo-icon">🦁</div>
+  <div class="logo-text">
+    <h1>GNU English Practice</h1>
+    <p>Gyeongsang National University · 경상국립대학교</p>
+  </div>
+</header>
 
-<div class="app">
+<!-- WORKER URL SETUP BANNER -->
+<div class="setup-banner" id="setupBanner">
+  <span>⚙️ <strong>Worker URL 설정:</strong></span>
+  <input type="text" id="workerUrlInput" placeholder="https://your-worker.your-name.workers.dev" />
+  <button onclick="saveWorkerUrl()">저장</button>
+  <span style="margin-left:8px; font-size:12px; opacity:0.7">Cloudflare Worker를 먼저 배포하세요 →</span>
+</div>
 
-<img src="jinu.png">
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('writing')" id="tabWriting">
+    ✍️ 글쓰기 평가
+  </button>
+  <button class="tab-btn" onclick="switchTab('speaking')" id="tabSpeaking">
+    🎤 말하기 평가
+  </button>
+</div>
 
-<h2>GNU English Practice</h2>
+<!-- ══════════════════════════════════════════════
+     WRITING PANEL
+══════════════════════════════════════════════ -->
+<div class="panel active" id="panelWriting">
 
+  <!-- Topic Area -->
+  <div class="section-label">주제 선택</div>
+  <div class="topic-box">
+    <div class="topic-label">오늘의 주제</div>
+    <div class="topic-text" id="currentTopic">AI technology will change the future of work.</div>
+    <div class="topic-actions" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+      <select class="topic-select" id="topicCategory" onchange="loadTopics()">
+        <option value="technology">Technology</option>
+        <option value="environment">Environment</option>
+        <option value="society">Society & Culture</option>
+        <option value="education">Education</option>
+        <option value="health">Health</option>
+      </select>
+      <button class="btn btn-sm btn-outline" onclick="randomTopic()">🎲 랜덤 주제</button>
+      <button class="btn btn-sm btn-outline" onclick="toggleCustomTopic()">✏️ 직접 입력</button>
+    </div>
+    <div id="customTopicRow" class="topic-input-row" style="display:none; margin-top:10px;">
+      <input type="text" id="customTopicInput" placeholder="주제를 영어로 입력하세요..." />
+      <button class="btn btn-sm btn-primary" onclick="setCustomTopic()">적용</button>
+    </div>
+  </div>
 
+  <!-- Writing Input -->
+  <div class="section-label">내 문장 작성</div>
+  <textarea id="writingInput"
+    placeholder="주제에 대한 영어 문장을 작성하세요... (예: I think AI will create more jobs than it destroys.)"
+    oninput="updateCharCount()"
+    maxlength="500"></textarea>
+  <div class="char-count"><span id="charCount">0</span> / 500</div>
 
-<section>
+  <div class="action-row">
+    <div></div>
+    <button class="btn btn-primary" onclick="evaluateWriting()" id="btnEvalWrite">
+      🔍 평가하기
+    </button>
+  </div>
 
-<h3>Step1 문장 교정</h3>
-
-<textarea id="userInput"></textarea>
-
-<button class="ai" onclick="refineWithAI()">
-
-AI 문장 교정
-
-</button>
-
-<div id="loading">
-
-AI 처리중...
+  <!-- Result -->
+  <div id="writingResult"></div>
 
 </div>
 
-<div id="refinedResult" class="box">
+<!-- ══════════════════════════════════════════════
+     SPEAKING PANEL
+══════════════════════════════════════════════ -->
+<div class="panel" id="panelSpeaking">
 
-문장을 입력하세요.
+  <!-- Target Sentence -->
+  <div class="section-label">목표 문장</div>
+  <div class="target-sentence-box">
+    <div class="label">읽고 따라 말할 문장</div>
+    <div class="sentence" id="targetSentence">
+      이 문장은 글쓰기 평가에서 생성됩니다. 먼저 글쓰기 탭에서 평가를 받으세요.
+    </div>
+    <button class="tts-btn" onclick="playTargetTTS()" id="ttsBtn">
+      🔊 원어민 발음 듣기
+    </button>
+  </div>
 
-</div>
+  <!-- Mic Area -->
+  <div class="mic-area" id="micArea">
+    <button class="mic-btn" id="micBtn" onclick="toggleRecording()">🎤</button>
+    <div class="mic-hint">
+      <strong id="micStatus">버튼을 누르고 말하세요</strong>
+      <span id="micSubStatus">마이크 버튼을 누른 후 목표 문장을 따라 말하세요</span>
+    </div>
+  </div>
 
-<button class="speak"
+  <!-- Transcript -->
+  <div class="section-label">인식된 내용</div>
+  <div class="transcript-box" id="transcriptBox">
+    (음성 인식 결과가 여기에 표시됩니다)
+  </div>
 
-onclick="listenNative()">
+  <div class="action-row" style="margin-top:16px;">
+    <button class="btn btn-outline btn-sm" onclick="clearSpeaking()">🗑️ 다시 시도</button>
+    <button class="btn btn-gold" onclick="evaluateSpeaking()" id="btnEvalSpeak" disabled>
+      🔍 말하기 평가
+    </button>
+  </div>
 
-🔊 원어민 듣기
-
-</button>
-
-</section>
-
-
-
-<section id="step2"
-
-style="display:none">
-
-<h3>Step2 말하기 평가</h3>
-
-<button class="record"
-
-onclick="startRecording()"
-
-id="recordBtn">
-
-🎤 발음 시작
-
-</button>
-
-
-<div id="evaluation"
-
-style="display:none">
-
-<div class="score">
-
-<span id="scoreValue">
-
-0.0
-
-</span>
+  <!-- Result -->
+  <div id="speakingResult"></div>
 
 </div>
 
-
-<div id="feedback"
-
-class="box">
-
-</div>
-
-</div>
-
-</section>
-
-
-
-</div>
-
-
+<footer>🦁 지누와 함께하는 GNU English Practice · Gyeongsang National University</footer>
 
 <script>
-
-
-// ⭐ Worker 주소
-
-const WORKER_URL=
-
-"https://hidden-shadow-6ff4.joyluck0505.workers.dev";
-
-
-let refinedText="";
-
-const synth=window.speechSynthesis;
-
-
-
-async function refineWithAI(){
-
-const input=
-
-userInput.value;
-
-if(!input){
-
-alert("문장 입력");
-
-return;
-
-}
-
-loading.style.display="block";
-
-try{
-
-const r=
-
-await fetch(
-
-WORKER_URL,
-
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json"
-
-},
-
-body:JSON.stringify({
-
-contents:[{
-
-parts:[{
-
-text:
-
-"영어 문장을 자연스럽게 교정하세요:\n"+input
-
-}]
-
-}]
-
-})
-
-}
-
-);
-
-
-const data=
-
-await r.json();
-
-console.log(data);
-
-refinedText=
-
-data.candidates[0]
-.content.parts[0]
-.text;
-
-refinedResult.innerText=
-
-refinedText;
-
-step2.style.display="block";
-
-
-}catch(e){
-
-alert("AI 연결 실패");
-
-console.log(e);
-
-}
-
-loading.style.display="none";
-
-}
-
-
-
-function listenNative(){
-
-if(!refinedText)return;
-
-synth.cancel();
-
-const u=
-
-new SpeechSynthesisUtterance(
-
-refinedText
-
-);
-
-u.lang="en-US";
-
-u.rate=0.85;
-
-synth.speak(u);
-
-}
-
-
-
-// 말하기 평가
-
-const SpeechRecognition=
-
-window.SpeechRecognition||
-
-window.webkitSpeechRecognition;
-
-const recognition=
-
-SpeechRecognition?
-
-new SpeechRecognition():null;
-
-
-
-if(recognition){
-
-recognition.lang="en-US";
-
-recognition.onresult=(e)=>{
-
-const t=
-
-e.results[0][0].transcript;
-
-const c=
-
-e.results[0][0].confidence;
-
-evaluation.style.display="block";
-
-scoreValue.innerText=
-
-(c*5).toFixed(1);
-
-feedback.innerText=
-
-"인식:\n"+t;
-
-recordBtn.innerText=
-
-"다시 말하기";
-
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+let WORKER_URL = localStorage.getItem('gnuWorkerUrl') || '';
+
+const TOPICS = {
+  technology: [
+    'AI technology will change the future of work.',
+    'Social media has more negative effects than positive ones.',
+    'Electric vehicles are the future of transportation.',
+    'Everyone should learn basic coding skills.',
+    'Smart devices make our lives more convenient but less private.',
+  ],
+  environment: [
+    'Governments should ban single-use plastics immediately.',
+    'Nuclear energy is necessary to solve the climate crisis.',
+    'Urban green spaces are essential for mental health.',
+    'Individuals have a responsibility to reduce their carbon footprint.',
+    'Renewable energy can fully replace fossil fuels.',
+  ],
+  society: [
+    'Social media has weakened real human connections.',
+    'Gender equality still has a long way to go.',
+    'Cultural diversity makes a society stronger.',
+    'Economic inequality is the biggest challenge of our time.',
+    'Tourism does more harm than good to local cultures.',
+  ],
+  education: [
+    'Online learning is as effective as traditional classroom education.',
+    'Students should be allowed to choose their own curriculum.',
+    'Standardized testing is an unfair measure of student ability.',
+    'Foreign language learning should be compulsory from primary school.',
+    'Universities should focus more on practical skills than theory.',
+  ],
+  health: [
+    'Mental health should be treated with the same priority as physical health.',
+    'Junk food advertising should be banned for children.',
+    'Regular exercise is more important than diet for good health.',
+    'Healthcare should be free for all citizens.',
+    'Technology is making people less physically active.',
+  ]
 };
 
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+window.onload = () => {
+  if (WORKER_URL) {
+    document.getElementById('setupBanner').style.display = 'none';
+  } else {
+    document.getElementById('workerUrlInput').value = '';
+  }
+  randomTopic();
+};
+
+function saveWorkerUrl() {
+  const val = document.getElementById('workerUrlInput').value.trim().replace(/\/$/, '');
+  if (!val || !val.startsWith('http')) {
+    alert('올바른 Worker URL을 입력하세요. (https://... 형식)');
+    return;
+  }
+  WORKER_URL = val;
+  localStorage.setItem('gnuWorkerUrl', WORKER_URL);
+  document.getElementById('setupBanner').style.display = 'none';
 }
 
-
-
-function startRecording(){
-
-if(!recognition){
-
-alert("브라우저 미지원");
-
-return;
-
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
 }
 
-recognition.start();
+// ══════════════════════════════════════════════
+// TOPICS
+// ══════════════════════════════════════════════
+function loadTopics() { randomTopic(); }
 
-recordBtn.innerText=
-
-"듣는중...";
-
+function randomTopic() {
+  const cat = document.getElementById('topicCategory').value;
+  const list = TOPICS[cat];
+  const t = list[Math.floor(Math.random() * list.length)];
+  document.getElementById('currentTopic').textContent = t;
 }
 
+function toggleCustomTopic() {
+  const row = document.getElementById('customTopicRow');
+  row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+}
 
+function setCustomTopic() {
+  const val = document.getElementById('customTopicInput').value.trim();
+  if (val) {
+    document.getElementById('currentTopic').textContent = val;
+    document.getElementById('customTopicRow').style.display = 'none';
+  }
+}
 
+function updateCharCount() {
+  const len = document.getElementById('writingInput').value.length;
+  document.getElementById('charCount').textContent = len;
+}
+
+// ══════════════════════════════════════════════
+// WRITING EVALUATION
+// ══════════════════════════════════════════════
+async function evaluateWriting() {
+  if (!checkWorker()) return;
+
+  const sentence = document.getElementById('writingInput').value.trim();
+  if (!sentence) { alert('문장을 입력해 주세요.'); return; }
+  if (sentence.length < 5) { alert('더 완성된 문장을 작성해 주세요.'); return; }
+
+  const btn = document.getElementById('btnEvalWrite');
+  btn.disabled = true;
+  btn.textContent = '평가 중...';
+
+  const resultDiv = document.getElementById('writingResult');
+  resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div> AI가 평가하고 있습니다...</div>`;
+
+  try {
+    const res = await fetch(`${WORKER_URL}/evaluate-writing`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sentence })
+    });
+
+    if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    renderWritingResult(data, sentence);
+
+    // Auto set target sentence for speaking
+    if (data.improved) {
+      document.getElementById('targetSentence').textContent = data.improved;
+    }
+
+  } catch (err) {
+    resultDiv.innerHTML = `<div class="error-box">❌ 오류가 발생했습니다: ${err.message}<br><small>Worker URL이 올바른지 확인하거나 페이지 상단에서 재설정하세요.</small></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 평가하기';
+  }
+}
+
+function renderWritingResult(data, original) {
+  const { scores, feedback, total, improved, explanation } = data;
+
+  const stars = '⭐'.repeat(total) + '☆'.repeat(3 - total);
+
+  const cItems = [
+    { key: 'native', name: '원어민 표현' },
+    { key: 'balanced', name: '균형있는 의견' },
+    { key: 'logical', name: '논리성' }
+  ];
+
+  const criteriaHtml = cItems.map(c => `
+    <div class="criterion-card ${scores[c.key] ? 'pass' : 'fail'}">
+      <div class="criterion-header">
+        <span class="criterion-name">${c.name}</span>
+        <span class="criterion-badge">${scores[c.key] ? '✅' : '❌'}</span>
+      </div>
+      <div class="criterion-feedback">${feedback[c.key] || ''}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('writingResult').innerHTML = `
+    <div class="result-box">
+      <div class="total-score">
+        <div class="score-num">${total}<span class="score-denom"> / 3</span></div>
+        <div class="score-stars">${stars}</div>
+        <div class="score-label">Writing Score</div>
+      </div>
+
+      <div class="criteria-grid">
+        ${criteriaHtml}
+      </div>
+
+      <div class="improved-box">
+        <div class="label">✨ 개선된 문장 (말하기 연습용)</div>
+        <div class="improved-sentence">${improved || original}</div>
+        <div class="improved-explanation">${explanation || ''}</div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="goToSpeaking('${(improved||original).replace(/'/g,"\\'")}')">
+          🎤 이 문장으로 말하기 연습 →
+        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('writingInput').value=''; document.getElementById('writingResult').innerHTML=''; updateCharCount();">
+          🔄 다시 작성
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function goToSpeaking(sentence) {
+  document.getElementById('targetSentence').textContent = sentence;
+  switchTab('speaking');
+  clearSpeaking();
+}
+
+// ══════════════════════════════════════════════
+// SPEECH RECOGNITION
+// ══════════════════════════════════════════════
+let recognition = null;
+let isRecording = false;
+let finalTranscript = '';
+
+function initRecognition() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    return null;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const r = new SR();
+  r.lang = 'en-US';
+  r.continuous = false;
+  r.interimResults = true;
+  r.maxAlternatives = 1;
+
+  r.onstart = () => {
+    isRecording = true;
+    document.getElementById('micBtn').classList.add('recording');
+    document.getElementById('micBtn').textContent = '⏹';
+    document.getElementById('micArea').classList.add('recording');
+    document.getElementById('micStatus').textContent = '🔴 녹음 중...';
+    document.getElementById('micSubStatus').textContent = '목표 문장을 또렷하게 말하세요';
+  };
+
+  r.onresult = (e) => {
+    let interim = '';
+    finalTranscript = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    document.getElementById('transcriptBox').textContent = (finalTranscript || interim) || '(인식 중...)';
+  };
+
+  r.onend = () => {
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micBtn').textContent = '🎤';
+    document.getElementById('micArea').classList.remove('recording');
+    document.getElementById('micStatus').textContent = '녹음 완료!';
+    document.getElementById('micSubStatus').textContent = '아래 버튼으로 평가를 시작하세요';
+    if (finalTranscript) {
+      document.getElementById('btnEvalSpeak').disabled = false;
+    }
+  };
+
+  r.onerror = (e) => {
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micBtn').textContent = '🎤';
+    document.getElementById('micArea').classList.remove('recording');
+    document.getElementById('micStatus').textContent = '오류 발생';
+    if (e.error === 'not-allowed') {
+      document.getElementById('micSubStatus').textContent = '마이크 권한을 허용해 주세요';
+    } else {
+      document.getElementById('micSubStatus').textContent = '다시 시도해 주세요: ' + e.error;
+    }
+  };
+
+  return r;
+}
+
+function toggleRecording() {
+  const target = document.getElementById('targetSentence').textContent;
+  if (target.includes('글쓰기 탭에서')) {
+    alert('먼저 글쓰기 탭에서 평가를 받아 목표 문장을 생성하세요.');
+    return;
+  }
+
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('이 브라우저는 음성 인식을 지원하지 않습니다.\nChrome 브라우저를 사용해 주세요.');
+    return;
+  }
+
+  if (isRecording) {
+    recognition && recognition.stop();
+  } else {
+    finalTranscript = '';
+    document.getElementById('transcriptBox').textContent = '(인식 중...)';
+    document.getElementById('btnEvalSpeak').disabled = true;
+    recognition = initRecognition();
+    recognition && recognition.start();
+  }
+}
+
+// ══════════════════════════════════════════════
+// SPEAKING EVALUATION
+// ══════════════════════════════════════════════
+async function evaluateSpeaking() {
+  if (!checkWorker()) return;
+
+  const targetSentence = document.getElementById('targetSentence').textContent;
+  const spokenText = finalTranscript || document.getElementById('transcriptBox').textContent;
+
+  if (!spokenText || spokenText.includes('음성 인식')) {
+    alert('먼저 문장을 말해 주세요.');
+    return;
+  }
+
+  const btn = document.getElementById('btnEvalSpeak');
+  btn.disabled = true;
+  btn.textContent = '평가 중...';
+
+  const resultDiv = document.getElementById('speakingResult');
+  resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div> AI가 평가하고 있습니다...</div>`;
+
+  try {
+    const res = await fetch(`${WORKER_URL}/evaluate-speaking`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetSentence, spokenText })
+    });
+
+    if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    renderSpeakingResult(data, targetSentence);
+
+  } catch (err) {
+    resultDiv.innerHTML = `<div class="error-box">❌ 오류: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 말하기 평가';
+  }
+}
+
+function renderSpeakingResult(data, sentence) {
+  const { scores, feedback, total, phoneticTips, encouragement } = data;
+  const stars = '⭐'.repeat(total) + '☆'.repeat(3 - total);
+
+  const words = sentence.split(' ').slice(0, 10);
+  const wordChips = words.map(w => `
+    <button class="word-chip" onclick="speakWord('${w.replace(/[^a-zA-Z0-9 ']/g,'')}')">
+      <span class="play-icon">🔊</span> ${w}
+    </button>
+  `).join('');
+
+  const cItems = [
+    { key: 'pronunciation', name: '발음' },
+    { key: 'intonation', name: '억양' },
+    { key: 'naturalness', name: '자연스러움' }
+  ];
+
+  const criteriaHtml = cItems.map(c => `
+    <div class="criterion-card ${scores[c.key] ? 'pass' : 'fail'}">
+      <div class="criterion-header">
+        <span class="criterion-name">${c.name}</span>
+        <span class="criterion-badge">${scores[c.key] ? '✅' : '❌'}</span>
+      </div>
+      <div class="criterion-feedback">${feedback[c.key] || ''}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('speakingResult').innerHTML = `
+    <div class="result-box">
+      <div class="total-score">
+        <div class="score-num">${total}<span class="score-denom"> / 3</span></div>
+        <div class="score-stars">${stars}</div>
+        <div class="score-label">Speaking Score</div>
+      </div>
+
+      <div class="criteria-grid">
+        ${criteriaHtml}
+      </div>
+
+      ${phoneticTips ? `
+      <div class="tips-box">
+        <div class="label">💡 발음 팁</div>
+        <p>${phoneticTips}</p>
+      </div>` : ''}
+
+      ${encouragement ? `<div class="encourage-box">🦁 ${encouragement}</div>` : ''}
+
+      <div class="repeat-section">
+        <div class="section-label">단어별 따라 말하기</div>
+        <p style="font-size:13px; color:var(--gnu-gray); margin-bottom:8px;">단어를 클릭하면 원어민 발음을 들을 수 있습니다</p>
+        <div class="word-chips">${wordChips}</div>
+        <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="playTargetTTS()">🔊 전체 문장 듣기</button>
+          <button class="btn btn-outline" onclick="clearSpeaking()">🔄 다시 연습</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════
+// TTS (Web Speech API)
+// ══════════════════════════════════════════════
+function playTargetTTS() {
+  const text = document.getElementById('targetSentence').textContent;
+  if (text.includes('글쓰기 탭에서')) return;
+  speakText(text);
+}
+
+function speakWord(word) {
+  speakText(word);
+}
+
+function speakText(text) {
+  if (!('speechSynthesis' in window)) {
+    alert('이 브라우저는 TTS를 지원하지 않습니다.');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = 0.85;
+  utter.pitch = 1;
+
+  const voices = window.speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang.startsWith('en') && !v.name.includes('Google')) 
+                || voices.find(v => v.lang.startsWith('en'));
+  if (enVoice) utter.voice = enVoice;
+
+  const btn = document.getElementById('ttsBtn');
+  if (btn) {
+    btn.classList.add('speaking');
+    btn.textContent = '🔊 재생 중...';
+    utter.onend = () => { btn.classList.remove('speaking'); btn.innerHTML = '🔊 원어민 발음 듣기'; };
+  }
+
+  window.speechSynthesis.speak(utter);
+}
+
+// Ensure voices are loaded
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+function clearSpeaking() {
+  finalTranscript = '';
+  document.getElementById('transcriptBox').textContent = '(음성 인식 결과가 여기에 표시됩니다)';
+  document.getElementById('speakingResult').innerHTML = '';
+  document.getElementById('btnEvalSpeak').disabled = true;
+  document.getElementById('micStatus').textContent = '버튼을 누르고 말하세요';
+  document.getElementById('micSubStatus').textContent = '마이크 버튼을 누른 후 목표 문장을 따라 말하세요';
+}
+
+function checkWorker() {
+  if (!WORKER_URL) {
+    document.getElementById('setupBanner').style.display = 'flex';
+    alert('먼저 Cloudflare Worker URL을 설정해 주세요.\n화면 상단의 Worker URL 설정창에 URL을 입력하세요.');
+    return false;
+  }
+  return true;
+}
 </script>
-
 </body>
 </html>
+
