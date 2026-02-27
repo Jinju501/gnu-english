@@ -1,184 +1,80 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 
-<title>GNU English Practice</title>
+<title>GNU English AI Studio</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
 
-:root{
---gnu-blue:#004c97;
---gnu-gold:#a78b45;
-}
+/* ===== BASIC ===== */
 
 body{
-font-family:Pretendard,sans-serif;
-background:#f0f2f5;
-display:flex;
-justify-content:center;
-padding:20px;
-}
 
-.app-card{
-
-background:white;
-width:100%;
-max-width:600px;
-
-border-radius:20px;
-
-box-shadow:0 10px 30px rgba(0,0,0,.1);
-
-padding:30px;
-
-border-top:8px solid var(--gnu-blue);
-
-text-align:center;
+font-family:Arial, sans-serif;
+background:#eef2f7;
+max-width:1000px;
+margin:auto;
+padding:25px;
 
 }
 
 h1{
 
-color:var(--gnu-blue);
+text-align:center;
 
 }
 
-section{
+/* ===== GNU ===== */
 
-text-align:left;
+#ginu{
 
-margin-bottom:25px;
-
-padding:18px;
-
-border-radius:12px;
-
-background:#f8fafc;
-
-border:1px solid #e2e8f0;
+position:fixed;
+bottom:20px;
+right:20px;
+font-size:45px;
 
 }
+
+/* ===== BOX ===== */
 
 textarea{
 
 width:100%;
-
-height:90px;
-
-border-radius:10px;
-
+height:180px;
 padding:12px;
+font-size:16px;
 
 }
 
 button{
 
-width:100%;
-
-padding:14px;
-
-margin-top:10px;
-
-border:none;
-
-border-radius:10px;
-
+padding:10px 14px;
+margin:5px;
 cursor:pointer;
-
-font-weight:bold;
-
-}
-
-.btn-ai{
-
-background:var(--gnu-blue);
-
-color:white;
+font-size:15px;
 
 }
 
-.btn-record{
-
-background:#ef4444;
-
-color:white;
-
-}
-
-.btn-speak{
-
-background:#10b981;
-
-color:white;
-
-}
-
-.result-box{
-
-font-size:18px;
-
-padding:15px;
+.card{
 
 background:white;
-
-border-radius:10px;
-
-border:1px dashed var(--gnu-blue);
-
-min-height:50px;
-
-}
-
-.feedback{
-
-background:#fffbe6;
-
 padding:15px;
-
 border-radius:10px;
+margin-top:15px;
 
-white-space:pre-wrap;
-
-}
-
-.score-circle{
-
-width:100px;
-
-height:100px;
-
-border-radius:50%;
-
-border:5px solid var(--gnu-gold);
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:center;
-
-align-items:center;
-
-margin:20px auto;
+box-shadow:0 2px 6px rgba(0,0,0,0.15);
 
 }
 
-.jinu-img{
+.score{
 
-width:150px;
-
-margin-bottom:15px;
-
-}
-
-#loading{
-
-display:none;
-
-color:var(--gnu-blue);
-
-margin:10px;
+font-weight:bold;
+margin-top:10px;
 
 }
 
@@ -188,146 +84,105 @@ margin:10px;
 
 <body>
 
-<div class="app-card">
+<h1>GNU English AI Studio</h1>
 
-<img src="jinu.png" class="jinu-img">
+<div class="card">
 
-<h1>GNU English Practice</h1>
+<h3>STEP1 — Draft Correction</h3>
 
-<p>Humanities-based English Speaking Lab</p>
+<textarea id="input"
+placeholder="Paste student writing..."></textarea>
 
+<button onclick="runStep1()">
 
-<section>
-
-<h3>STEP 1. 영작 및 교정</h3>
-
-<textarea id="userInput"
-placeholder="연습 문장을 입력하세요"></textarea>
-
-<button id="refineBtn"
-class="btn-ai"
-onclick="refineWithAI()">
-
-AI 문장 교정 실행
-
-</button>
-
-<div id="loading">
-
-AI 처리중...
-
-</div>
-
-
-<div>
-
-<p>교정 문장</p>
-
-<div id="refinedResult"
-class="result-box">
-
-문장을 입력하세요.
-
-</div>
-
-<button
-class="btn-speak"
-onclick="listenNative()">
-
-🔊 원어민 발음 듣기
+STEP1 Grammar Fix
 
 </button>
 
 </div>
 
-</section>
 
+<div class="card">
 
+<h3>STEP2 — Academic Refinement</h3>
 
-<section id="step2"
-style="display:none;">
+<button onclick="runStep2()">
 
-<h3>STEP 2. 말하기 평가</h3>
-
-<button id="recordBtn"
-class="btn-record"
-onclick="startRecording()">
-
-🎤 발음 시작
+STEP2 Academic Rewrite
 
 </button>
 
-<div id="evaluationArea"
-style="display:none;">
+</div>
 
-<div class="score-circle">
 
-<span>SCORE</span>
+<div class="card">
 
-<span id="scoreValue"
-style="font-size:28px;">
+<h3>Result</h3>
 
-0.0
+<div id="output">
 
-</span>
+Result appears here.
 
 </div>
 
-<div id="feedbackDetail"
-class="feedback">
+<div id="score" class="score">
 
 </div>
 
+<button onclick="downloadDoc()">
+
+Download Word (.doc)
+
+</button>
+
+<button onclick="speakText()">
+
+Speaking Feedback 🔊
+
+</button>
+
 </div>
 
-</section>
+
+<div id="ginu">
+
+🦊
 
 </div>
 
 
 <script>
 
-/* ⭐ 여기만 직접 본인 API KEY 입력 */
+/* ========= CHANGE THIS ========= */
 
-const API_KEY="AIzaSyDz9rPTpRuTsPVaQi08VQ0PeGN-G-b_jlI";
+const WORKER_URL=
 
+"https://YOURWORKER.workers.dev";
 
-let refinedText="";
-
-const synth=window.speechSynthesis;
-
+/* =============================== */
 
 
-async function refineWithAI(){
+let step1Text="";
 
-const input=document
-.getElementById("userInput").value;
+let finalText="";
 
-if(!input){
+async function callAI(prompt){
 
-alert("문장을 입력하세요");
+const payload={
 
-return;
+contents:[{
 
-}
+parts:[{text:prompt}]
 
-const btn=
-document.getElementById("refineBtn");
+}]
 
-const loading=
-document.getElementById("loading");
+};
 
-btn.disabled=true;
+const res=await fetch(
 
-loading.style.display="block";
+WORKER_URL,
 
-try{
-
-const url=
-
-`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-const response=await fetch(url,{
+{
 
 method:"POST",
 
@@ -337,196 +192,234 @@ headers:{
 
 },
 
-body:JSON.stringify({
-
-contents:[{
-
-parts:[{
-
-text:
-
-`Refine into natural academic English only:
-
-"${input}"`
-
-}]
-
-}]
-
-})
-
-});
-
-
-/* ⭐ 진짜 중요 */
-
-if(!response.ok){
-
-const t=await response.text();
-
-console.error("SERVER ERROR:",t);
-
-throw new Error("HTTP FAIL");
+body:JSON.stringify(payload)
 
 }
 
-const data=await response.json();
-
-console.log("Gemini:",data);
-
-refinedText=
-
-data?.candidates?.[0]
-?.content?.parts?.[0]
-?.text;
-
-if(!refinedText){
-
-throw new Error("응답 없음");
-
-}
-
-document
-.getElementById("refinedResult")
-.innerText=refinedText.trim();
-
-document
-.getElementById("step2")
-.style.display="block";
-
-}
-catch(e){
-
-console.error(e);
-
-alert("AI 연결 실패 — F12 Console 확인");
-
-}
-
-finally{
-
-btn.disabled=false;
-
-loading.style.display="none";
-
-}
-
-}
-
-
-
-function listenNative(){
-
-if(!refinedText)return;
-
-synth.cancel();
-
-const u=
-new SpeechSynthesisUtterance(
-refinedText
 );
 
-u.lang="en-US";
+if(!res.ok){
 
-u.rate=.9;
+throw Error("Worker Error");
 
-synth.speak(u);
+}
+
+const data=await res.json();
+
+return data
+.candidates?.[0]
+?.content?.parts?.[0]?.text
+||"No AI response.";
 
 }
 
 
+/* ===== STEP1 ===== */
 
-/* ===== 말하기 평가 ===== */
+async function runStep1(){
 
-const SpeechRecognition=
+const input=
 
-window.SpeechRecognition
-||
-window.webkitSpeechRecognition;
+document.getElementById("input").value;
 
+if(!input){
 
-const recognition=
-
-SpeechRecognition
-?
-new SpeechRecognition()
-:null;
-
-
-if(recognition){
-
-recognition.lang="en-US";
-
-recognition.onresult=(e)=>{
-
-const transcript=
-
-e.results[0][0]
-.transcript
-.toLowerCase();
-
-const confidence=
-
-e.results[0][0]
-.confidence;
-
-document
-.getElementById("evaluationArea")
-.style.display="block";
-
-document
-.getElementById("scoreValue")
-.innerText=
-
-(confidence*5)
-.toFixed(1);
-
-document
-.getElementById("feedbackDetail")
-.innerText=
-
-`[인식 결과]
-
-"${transcript}"
-
-발음 정확도 점수입니다.
-반복 연습하세요!`;
-
-document
-.getElementById("recordBtn")
-.innerText=
-
-"🎤 다시 말하기";
-
-};
-
-}
-
-
-
-function startRecording(){
-
-if(!recognition){
-
-alert(
-"이 브라우저는 음성인식 미지원"
-);
+alert("Enter text");
 
 return;
 
 }
 
-recognition.start();
+document.getElementById("output")
+.innerText="STEP1 Working...";
 
-document
-.getElementById("recordBtn")
-.innerText=
+const prompt=
 
-"🔴 듣는 중...";
+`
+Fix grammar only.
+
+Do not rewrite style.
+
+TEXT:
+
+${input}
+
+Return corrected text only.
+`;
+
+try{
+
+step1Text=await callAI(prompt);
+
+document.getElementById("output")
+.innerText=step1Text;
+
+}catch(e){
+
+alert(e);
+
+}
+
+}
+
+
+/* ===== STEP2 ===== */
+
+async function runStep2(){
+
+if(!step1Text){
+
+alert("Run STEP1 first.");
+
+return;
+
+}
+
+document.getElementById("output")
+.innerText="STEP2 Working...";
+
+
+const prompt=
+
+`
+You are an academic journal editor.
+
+Rewrite academically.
+
+Keep author's meaning.
+
+Return:
+
+REFINED TEXT:
+
+then
+
+EVALUATION SCORE (0-100)
+with 1 sentence comment.
+
+TEXT:
+
+${step1Text}
+
+`;
+
+try{
+
+const result=await callAI(prompt);
+
+parseResult(result);
+
+}catch(e){
+
+alert(e);
+
+}
+
+}
+
+
+function parseResult(text){
+
+let refined=text;
+
+let score="";
+
+if(text.includes("REFINED TEXT")){
+
+const split=text.split("REFINED TEXT:");
+
+const rest=split[1];
+
+const evalSplit=
+
+rest.split("EVALUATION");
+
+refined=evalSplit[0];
+
+score=evalSplit[1]||"";
+
+}
+
+finalText=refined;
+
+document.getElementById("output")
+.innerText=refined;
+
+document.getElementById("score")
+.innerText=score;
+
+}
+
+
+/* ===== WORD DOWNLOAD ===== */
+
+function downloadDoc(){
+
+if(!finalText){
+
+alert("No result.");
+
+return;
+
+}
+
+const header=
+
+"<html><body>";
+
+const footer="</body></html>";
+
+const blob=
+
+new Blob(
+
+[header+finalText+footer],
+
+{type:"application/msword"}
+
+);
+
+const url=
+
+URL.createObjectURL(blob);
+
+const a=document.createElement("a");
+
+a.href=url;
+
+a.download="AI_Refined.doc";
+
+a.click();
+
+}
+
+
+/* ===== SPEAK ===== */
+
+function speakText(){
+
+if(!finalText){
+
+alert("No result.");
+
+return;
+
+}
+
+speechSynthesis.cancel();
+
+const utter=
+
+new SpeechSynthesisUtterance(finalText);
+
+utter.lang="en-US";
+
+speechSynthesis.speak(utter);
 
 }
 
 </script>
 
 </body>
+
 </html>
