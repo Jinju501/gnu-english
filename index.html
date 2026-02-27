@@ -805,7 +805,7 @@
 // ══════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════
-let WORKER_URL = localStorage.getItem('gnuWorkerUrl') || '';
+let WORKER_URL = 'https://gnu-english-worker.joyluck0505.workers.dev';
 
 const TOPICS = {
   technology: [
@@ -849,11 +849,7 @@ const TOPICS = {
 // INIT
 // ══════════════════════════════════════════════
 window.onload = () => {
-  if (WORKER_URL) {
-    document.getElementById('setupBanner').style.display = 'none';
-  } else {
-    document.getElementById('workerUrlInput').value = '';
-  }
+  document.getElementById('setupBanner').style.display = 'none';
   randomTopic();
 };
 
@@ -1265,4 +1261,3 @@ function checkWorker() {
 </script>
 </body>
 </html>
-
