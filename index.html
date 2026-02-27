@@ -23,7 +23,6 @@
         .score-num { font-size: 32px; font-weight: 800; }
         .feedback { font-size: 14px; color: #475569; line-height: 1.6; white-space: pre-wrap; background: #fffbe6; padding: 15px; border-radius: 10px; text-align: left; }
         #loading { display: none; text-align: center; font-size: 14px; color: var(--gnu-blue); margin: 10px 0; }
-        /* 지누 이미지 스타일 */
         .jinu-img { width: 150px; height: auto; margin-bottom: 15px; }
     </style>
 </head>
@@ -31,7 +30,6 @@
 
 <div class="app-card">
     <img src="jinu.png" alt="지누" class="jinu-img">
-    
     <h1>GNU English Practice</h1>
     <p class="sub-title">Humanities-based English Speaking Lab</p>
 
@@ -50,7 +48,6 @@
     <section id="step2" style="display:none;">
         <h3>Step 2. 말하기 연습 및 평가</h3>
         <button id="recordBtn" class="btn-record" onclick="startRecording()">🎤 발음 시작 (클릭)</button>
-        
         <div id="evaluationArea" style="display:none;">
             <div class="score-circle">
                 <span style="font-size:12px;">SCORE</span>
@@ -62,14 +59,14 @@
 </div>
 
 <script>
-    const API_KEY = 'AIzaSyDiyy6UJeoRRPC8WSQeAm7Z7Dwxq7ZnVXE';
+    // 알려주신 새 키(AIzaSyAnCW87WQ9ncFzqvAtAu6eIDAdwjSvdeog)가 적용되었습니다.
+    const API_KEY = 'AIzaSyAnCW87WQ9ncFzqvAtAu6eIDAdwjSvdeog';
     let refinedText = "";
     const synth = window.speechSynthesis;
 
     async function refineWithAI() {
         const userInput = document.getElementById('userInput').value;
         if (!userInput) return alert("문장을 입력해주세요.");
-
         const btn = document.getElementById('refineBtn');
         const loading = document.getElementById('loading');
         btn.disabled = true;
@@ -87,14 +84,13 @@
                     }]
                 })
             });
-
             const data = await response.json();
             refinedText = data.candidates[0].content.parts[0].text.trim();
             document.getElementById('refinedResult').innerText = refinedText;
             document.getElementById('step2').style.display = "block";
         } catch (error) {
             console.error(error);
-            alert("AI 연결 실패. 인터넷 연결을 확인하세요.");
+            alert("AI 연결 실패. API 키 유효성이나 인터넷을 확인하세요.");
         } finally {
             btn.disabled = false;
             loading.style.display = "none";
@@ -111,24 +107,24 @@
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-
+    const recognition = (SpeechRecognition) ? new SpeechRecognition() : null;
+    if (recognition) {
+        recognition.lang = 'en-US';
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            const confidence = event.results[0][0].confidence;
+            document.getElementById('evaluationArea').style.display = "block";
+            const finalScore = (confidence * 5).toFixed(1);
+            document.getElementById('scoreValue').innerText = finalScore;
+            document.getElementById('recordBtn').innerText = "🎤 다시 말하기";
+            document.getElementById('feedbackDetail').innerText = `[인식 결과]\n"${transcript}"\n\n발음 정확도 점수입니다. 반복해서 시도해 보세요!`;
+        };
+    }
     function startRecording() {
+        if (!recognition) return alert("이 브라우저는 음성 인식을 지원하지 않습니다.");
         recognition.start();
         document.getElementById('recordBtn').innerText = "🔴 듣고 있습니다...";
     }
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.toLowerCase();
-        const confidence = event.results[0][0].confidence;
-        
-        document.getElementById('evaluationArea').style.display = "block";
-        const finalScore = (confidence * 5).toFixed(1);
-        document.getElementById('scoreValue').innerText = finalScore;
-        document.getElementById('recordBtn').innerText = "🎤 다시 말하기";
-        document.getElementById('feedbackDetail').innerText = `[인식 결과]\n"${transcript}"\n\n발음 정확도 점수입니다. 반복해서 시도해 보세요!`;
-    };
 </script>
 </body>
 </html>
