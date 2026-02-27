@@ -8,52 +8,98 @@
 
 <style>
 
-body{
+:root{
 
-font-family:Arial;
-background:#f2f6fb;
-text-align:center;
-padding:30px;
+--gnu-blue:#004c97;
+--gnu-gold:#a78b45;
 
 }
 
-.card{
+body{
+
+font-family:Pretendard,Arial;
+background:#f0f2f5;
+display:flex;
+justify-content:center;
+padding:20px;
+
+}
+
+.app{
 
 background:white;
+max-width:650px;
+width:100%;
+border-radius:20px;
 padding:25px;
-border-radius:15px;
-max-width:700px;
-margin:auto;
+text-align:center;
+border-top:8px solid var(--gnu-blue);
 
 }
 
 textarea{
 
-width:90%;
-height:120px;
+width:100%;
+height:100px;
 font-size:16px;
+margin-top:10px;
 
 }
 
 button{
 
-padding:14px 22px;
-margin:10px;
-font-size:17px;
+width:100%;
+padding:14px;
+margin-top:10px;
 border:none;
-border-radius:8px;
+border-radius:10px;
+font-weight:bold;
 cursor:pointer;
-background:#004c97;
+
+}
+
+.ai{
+
+background:var(--gnu-blue);
 color:white;
 
 }
 
-.result{
+.record{
 
-margin-top:20px;
-padding:15px;
+background:#ef4444;
+color:white;
+
+}
+
+.speak{
+
+background:#10b981;
+color:white;
+
+}
+
+.box{
+
 background:#f8fafc;
+padding:15px;
 border-radius:10px;
+margin-top:15px;
+text-align:left;
+
+}
+
+.score{
+
+width:100px;
+height:100px;
+border-radius:50%;
+border:5px solid var(--gnu-gold);
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+margin:15px auto;
 
 }
 
@@ -67,137 +113,139 @@ width:140px;
 
 </head>
 
+
 <body>
 
-<div class="card">
+
+<div class="app">
 
 <img src="jinu.png">
 
-<h2>GNU English AI Lab</h2>
+<h2>GNU English Practice</h2>
 
 
-<div id="home">
 
-<button onclick="openGrammar()">
+<section>
 
-✏️ 문장 교정
+<h3>Step1 문장 교정</h3>
+
+<textarea id="userInput"></textarea>
+
+<button class="ai" onclick="refineWithAI()">
+
+AI 문장 교정
 
 </button>
 
-<button onclick="openSpeech()">
+<div id="loading">
 
-🎤 말하기 평가
+AI 처리중...
+
+</div>
+
+<div id="refinedResult" class="box">
+
+문장을 입력하세요.
+
+</div>
+
+<button class="speak"
+
+onclick="listenNative()">
+
+🔊 원어민 듣기
 
 </button>
+
+</section>
+
+
+
+<section id="step2"
+
+style="display:none">
+
+<h3>Step2 말하기 평가</h3>
+
+<button class="record"
+
+onclick="startRecording()"
+
+id="recordBtn">
+
+🎤 발음 시작
+
+</button>
+
+
+<div id="evaluation"
+
+style="display:none">
+
+<div class="score">
+
+<span id="scoreValue">
+
+0.0
+
+</span>
 
 </div>
 
 
-<div id="grammar" style="display:none">
+<div id="feedback"
 
-<h3>문장 교정</h3>
-
-<textarea id="grammarInput"></textarea>
-
-<br>
-
-<button onclick="correctSentence()">
-
-AI 교정
-
-</button>
-
-<button onclick="goHome()">
-
-처음으로
-
-</button>
-
-<div id="grammarResult" class="result">
+class="box">
 
 </div>
 
 </div>
 
+</section>
 
 
-<div id="speech" style="display:none">
-
-<h3>말하기 평가</h3>
-
-<textarea id="speechInput"></textarea>
-
-<br>
-
-<button onclick="evaluateSpeech()">
-
-AI 평가
-
-</button>
-
-<button onclick="goHome()">
-
-처음으로
-
-</button>
-
-<div id="speechResult" class="result">
 
 </div>
 
-</div>
-
-
-</div>
 
 
 <script>
+
+
+// ⭐ Worker 주소
 
 const WORKER_URL=
 
 "https://hidden-shadow-6ff4.joyluck0505.workers.dev";
 
 
+let refinedText="";
 
-function openGrammar(){
-
-home.style.display="none";
-
-grammar.style.display="block";
-
-speech.style.display="none";
-
-}
+const synth=window.speechSynthesis;
 
 
-function openSpeech(){
 
-home.style.display="none";
+async function refineWithAI(){
 
-speech.style.display="block";
+const input=
 
-grammar.style.display="none";
+userInput.value;
+
+if(!input){
+
+alert("문장 입력");
+
+return;
 
 }
 
-
-function goHome(){
-
-home.style.display="block";
-
-grammar.style.display="none";
-
-speech.style.display="none";
-
-}
-
-
-
-async function callAI(prompt){
+loading.style.display="block";
 
 try{
 
-const r=await fetch(
+const r=
+
+await fetch(
 
 WORKER_URL,
 
@@ -217,7 +265,9 @@ contents:[{
 
 parts:[{
 
-text:prompt
+text:
+
+"영어 문장을 자연스럽게 교정하세요:\n"+input
 
 }]
 
@@ -229,69 +279,59 @@ text:prompt
 
 );
 
-const data=await r.json();
+
+const data=
+
+await r.json();
 
 console.log(data);
 
-if(
+refinedText=
 
-data.candidates &&
-
-data.candidates[0] &&
-
-data.candidates[0].content &&
-
-data.candidates[0].content.parts
-
-){
-
-return data.candidates[0]
+data.candidates[0]
 .content.parts[0]
 .text;
 
-}
+refinedResult.innerText=
 
-return "AI 응답 없음";
+refinedText;
+
+step2.style.display="block";
+
 
 }catch(e){
 
+alert("AI 연결 실패");
+
 console.log(e);
 
-return "AI 연결 실패";
+}
+
+loading.style.display="none";
 
 }
 
-}
 
 
+function listenNative(){
 
-// 문장 교정
+if(!refinedText)return;
 
-async function correctSentence(){
+synth.cancel();
 
-const input=
+const u=
 
-grammarInput.value;
+new SpeechSynthesisUtterance(
 
-if(!input){
-
-alert("문장을 입력하세요");
-
-return;
-
-}
-
-grammarResult.innerText="교정 중...";
-
-const result=
-
-await callAI(
-
-"다음 문장을 자연스럽게 교정하세요:\n\n"+input
+refinedText
 
 );
 
-grammarResult.innerText=result;
+u.lang="en-US";
+
+u.rate=0.85;
+
+synth.speak(u);
 
 }
 
@@ -299,33 +339,73 @@ grammarResult.innerText=result;
 
 // 말하기 평가
 
-async function evaluateSpeech(){
+const SpeechRecognition=
 
-const input=
+window.SpeechRecognition||
 
-speechInput.value;
+window.webkitSpeechRecognition;
 
-if(!input){
+const recognition=
 
-alert("문장을 입력하세요");
+SpeechRecognition?
+
+new SpeechRecognition():null;
+
+
+
+if(recognition){
+
+recognition.lang="en-US";
+
+recognition.onresult=(e)=>{
+
+const t=
+
+e.results[0][0].transcript;
+
+const c=
+
+e.results[0][0].confidence;
+
+evaluation.style.display="block";
+
+scoreValue.innerText=
+
+(c*5).toFixed(1);
+
+feedback.innerText=
+
+"인식:\n"+t;
+
+recordBtn.innerText=
+
+"다시 말하기";
+
+};
+
+}
+
+
+
+function startRecording(){
+
+if(!recognition){
+
+alert("브라우저 미지원");
 
 return;
 
 }
 
-speechResult.innerText="평가 중...";
+recognition.start();
 
-const result=
+recordBtn.innerText=
 
-await callAI(
-
-"학생 영어 발화를 평가하고 교정하세요:\n\n"+input
-
-);
-
-speechResult.innerText=result;
+"듣는중...";
 
 }
+
+
 
 </script>
 
