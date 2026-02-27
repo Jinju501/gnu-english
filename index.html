@@ -1,62 +1,65 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
 
 <meta charset="UTF-8">
 
-<title>GNU English AI Lab</title>
+<title>GNU English Practice</title>
 
 <style>
 
 body{
 
 font-family:Arial;
-background:#eef2f7;
+background:#f2f6fb;
 text-align:center;
 padding:30px;
 
 }
 
-h1{
+.card{
 
-margin-bottom:20px;
+background:white;
+padding:25px;
+border-radius:15px;
+max-width:700px;
+margin:auto;
+
+}
+
+textarea{
+
+width:90%;
+height:120px;
+font-size:16px;
 
 }
 
 button{
 
 padding:14px 22px;
-margin:8px;
-font-size:18px;
-cursor:pointer;
-border-radius:8px;
+margin:10px;
+font-size:17px;
 border:none;
-background:#2b7cff;
+border-radius:8px;
+cursor:pointer;
+background:#004c97;
 color:white;
 
 }
 
-textarea{
+.result{
 
-width:85%;
-height:130px;
-font-size:16px;
-
-}
-
-#panel{
-
-background:white;
-padding:20px;
-border-radius:12px;
 margin-top:20px;
+padding:15px;
+background:#f8fafc;
+border-radius:10px;
 
 }
 
-.avatar{
+img{
 
-font-size:60px;
+width:140px;
 
 }
 
@@ -64,26 +67,16 @@ font-size:60px;
 
 </head>
 
-
 <body>
 
-<h1>GNU English AI Practice</h1>
+<div class="card">
+
+<img src="jinu.png">
+
+<h2>GNU English AI Lab</h2>
 
 
 <div id="home">
-
-<div class="avatar">
-
-🧑‍🏫 지누
-
-</div>
-
-<button onclick="openSpeak()">
-
-🎤 말하기 평가
-
-</button>
-
 
 <button onclick="openGrammar()">
 
@@ -91,15 +84,48 @@ font-size:60px;
 
 </button>
 
+<button onclick="openSpeech()">
+
+🎤 말하기 평가
+
+</button>
+
+</div>
+
+
+<div id="grammar" style="display:none">
+
+<h3>문장 교정</h3>
+
+<textarea id="grammarInput"></textarea>
+
+<br>
+
+<button onclick="correctSentence()">
+
+AI 교정
+
+</button>
+
+<button onclick="goHome()">
+
+처음으로
+
+</button>
+
+<div id="grammarResult" class="result">
+
+</div>
+
 </div>
 
 
 
-<div id="speak" style="display:none">
+<div id="speech" style="display:none">
 
 <h3>말하기 평가</h3>
 
-<textarea id="speechText"></textarea>
+<textarea id="speechInput"></textarea>
 
 <br>
 
@@ -115,43 +141,17 @@ AI 평가
 
 </button>
 
-<div id="speechResult" class="panel">
+<div id="speechResult" class="result">
 
 </div>
 
 </div>
 
-
-
-<div id="grammar" style="display:none">
-
-<h3>문장 교정</h3>
-
-<textarea id="grammarText"></textarea>
-
-<br>
-
-<button onclick="correctGrammar()">
-
-AI 교정
-
-</button>
-
-<button onclick="goHome()">
-
-처음으로
-
-</button>
-
-<div id="grammarResult">
-
-</div>
 
 </div>
 
 
 <script>
-
 
 const WORKER_URL=
 
@@ -159,20 +159,24 @@ const WORKER_URL=
 
 
 
-function openSpeak(){
+function openGrammar(){
 
 home.style.display="none";
-speak.style.display="block";
-grammar.style.display="none";
+
+grammar.style.display="block";
+
+speech.style.display="none";
 
 }
 
 
-function openGrammar(){
+function openSpeech(){
 
 home.style.display="none";
-grammar.style.display="block";
-speak.style.display="none";
+
+speech.style.display="block";
+
+grammar.style.display="none";
 
 }
 
@@ -180,8 +184,10 @@ speak.style.display="none";
 function goHome(){
 
 home.style.display="block";
+
 grammar.style.display="none";
-speak.style.display="none";
+
+speech.style.display="none";
 
 }
 
@@ -189,7 +195,9 @@ speak.style.display="none";
 
 async function callAI(prompt){
 
-const r = await fetch(
+try{
+
+const r=await fetch(
 
 WORKER_URL,
 
@@ -198,7 +206,9 @@ WORKER_URL,
 method:"POST",
 
 headers:{
+
 "Content-Type":"application/json"
+
 },
 
 body:JSON.stringify({
@@ -219,18 +229,19 @@ text:prompt
 
 );
 
-const data = await r.json();
+const data=await r.json();
 
 console.log(data);
 
 if(
 
-data &&
 data.candidates &&
-data.candidates.length>0 &&
+
+data.candidates[0] &&
+
 data.candidates[0].content &&
-data.candidates[0].content.parts &&
-data.candidates[0].content.parts.length>0
+
+data.candidates[0].content.parts
 
 ){
 
@@ -242,34 +253,13 @@ return data.candidates[0]
 
 return "AI 응답 없음";
 
-}
+}catch(e){
 
+console.log(e);
 
-
-// 말하기 평가
-
-async function evaluateSpeech(){
-
-const input =
-speechText.value;
-
-if(!input){
-
-alert("문장을 입력하세요");
-
-return;
+return "AI 연결 실패";
 
 }
-
-speechResult.innerText="평가 중...";
-
-const result = await callAI(
-
-"학생 영어 발화를 평가하고 자연스럽게 교정하세요:\n\n"+input
-
-);
-
-speechResult.innerText=result;
 
 }
 
@@ -277,10 +267,11 @@ speechResult.innerText=result;
 
 // 문장 교정
 
-async function correctGrammar(){
+async function correctSentence(){
 
-const input =
-grammarText.value;
+const input=
+
+grammarInput.value;
 
 if(!input){
 
@@ -292,9 +283,11 @@ return;
 
 grammarResult.innerText="교정 중...";
 
-const result = await callAI(
+const result=
 
-"다음 영어 문장을 자연스럽게 교정하세요:\n\n"+input
+await callAI(
+
+"다음 문장을 자연스럽게 교정하세요:\n\n"+input
 
 );
 
@@ -303,9 +296,38 @@ grammarResult.innerText=result;
 }
 
 
+
+// 말하기 평가
+
+async function evaluateSpeech(){
+
+const input=
+
+speechInput.value;
+
+if(!input){
+
+alert("문장을 입력하세요");
+
+return;
+
+}
+
+speechResult.innerText="평가 중...";
+
+const result=
+
+await callAI(
+
+"학생 영어 발화를 평가하고 교정하세요:\n\n"+input
+
+);
+
+speechResult.innerText=result;
+
+}
+
 </script>
 
-
 </body>
-
 </html>
