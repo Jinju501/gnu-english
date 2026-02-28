@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GNU English Practice</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0A2472">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GNU English">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%230A2472'/><text y='130' x='96' text-anchor='middle' font-size='120'>🦁</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -677,6 +684,50 @@
     color: var(--gnu-gray);
     opacity: 0.7;
   }
+
+  /* PWA Install Banner */
+  .install-banner {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--gnu-navy), var(--gnu-blue));
+    color: white;
+    padding: 14px 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(10,36,114,0.4);
+    z-index: 999;
+    align-items: center;
+    gap: 12px;
+    max-width: 340px;
+    width: calc(100% - 48px);
+    animation: slideUp 0.4s ease;
+  }
+  .install-banner.show { display: flex; }
+  .install-banner .install-text { flex: 1; font-size: 13px; line-height: 1.5; }
+  .install-banner .install-text strong { display: block; font-size: 15px; margin-bottom: 2px; }
+  .install-banner .btn-install {
+    background: var(--gnu-gold);
+    color: #1E293B;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: "Noto Sans KR", sans-serif;
+  }
+  .install-banner .btn-close {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
 </style>
 </head>
 <body>
@@ -1258,6 +1309,55 @@ function checkWorker() {
   }
   return true;
 }
+
+// ══════════════════════════════════════════════
+// PWA
+// ══════════════════════════════════════════════
+let deferredPrompt = null;
+
+// Service Worker 등록
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW 등록 실패:', err));
+  });
+}
+
+// 안드로이드 설치 프롬프트
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('installBanner').classList.remove('show');
+  }
+});
+
+function dismissInstall() {
+  document.getElementById('installBanner').classList.remove('show');
+  sessionStorage.setItem('installDismissed', '1');
+}
+
+// 이미 설치된 경우 배너 숨김
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').classList.remove('show');
+});
 </script>
+
+<!-- PWA Install Banner -->
+<div class="install-banner" id="installBanner">
+  <span style="font-size:28px">🦁</span>
+  <div class="install-text">
+    <strong>앱으로 설치하기</strong>
+    홈화면에 추가하면 앱처럼 사용할 수 있어요!
+  </div>
+  <button class="btn-install" id="installBtn">설치</button>
+  <button class="btn-close" onclick="dismissInstall()">✕</button>
+</div>
 </body>
 </html>
